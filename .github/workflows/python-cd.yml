@@ -29,4 +29,4 @@ jobs:
           cd ~/apps/packapp
           git pull origin main
           git status
-          poetry install
+          ~/.local/bin/poetry install --only main --sync
