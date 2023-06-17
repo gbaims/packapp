@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "gbaims-packapp"
+version = "0.1.0"
+description = ""
+authors = ["Gabriel Baims <gabriel.a.baims@gmail.com>"]
+readme = "README.md"
+packages = [{include = "gbaims"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
