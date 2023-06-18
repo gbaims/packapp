@@ -30,3 +30,4 @@ jobs:
           git pull origin main
           git status
           ~/.local/bin/poetry install --only main --sync
+          systemctl restart packapp
