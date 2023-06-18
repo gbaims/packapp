@@ -10,7 +10,7 @@ packages = [{include = "gbaims"}]
 python = "^3.10"
 flask = "^2.3.2"
 gunicorn = "^20.1.0"
-
+pydantic = {extras = ["dotenv"], version = "^1.10.9"}
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.3.0"
