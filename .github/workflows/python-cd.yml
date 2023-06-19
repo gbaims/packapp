@@ -29,4 +29,5 @@ jobs:
           git pull origin main
           git status
           ~/.local/bin/poetry install --only main --sync
+          ~/.venv/bin/python gbaims/packapp/seed.py
           systemctl restart packapp
