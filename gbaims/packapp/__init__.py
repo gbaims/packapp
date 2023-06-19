@@ -1,6 +1,7 @@
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
+from gbaims.packapp import api
 from gbaims.packapp.io.config import Config
 
 
@@ -15,8 +16,6 @@ def create_app():
     if config.environment.is_production():
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)  # type: ignore
 
-    @app.get("/")
-    def root():
-        return {"hello": "world"}
+    app.get("/fetch_stock")(api.fetch_stock)
 
     return app
