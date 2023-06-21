@@ -1,0 +1,2 @@
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/fulfillment_services.json?scope=all
+X-Shopify-Access-Token: {{$dotenv TOKEN}}
