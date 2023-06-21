@@ -1,6 +1,8 @@
 import json
 
-from flask import abort, request
+from flask import abort
+
+from gbaims.packapp import ctx
 
 
 def fetch_stock():
@@ -8,7 +10,7 @@ def fetch_stock():
         data = file.read()
 
     skus = json.loads(data)
-    requested_sku = request.args.get("sku")
+    requested_sku = ctx.request.args.get("sku")
     if requested_sku:
         if (qty := skus.get(requested_sku)) is None:
             abort(404)
