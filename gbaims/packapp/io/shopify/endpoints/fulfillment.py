@@ -1,7 +1,6 @@
 from typing import TypedDict
 
-from .._client import ShopifyClient, ShopifyFallible
-from .._exceptions import ShopifyFailure
+from .._client import ShopifyClient
 
 
 class FulfillmentOrderInfo(TypedDict):
@@ -28,10 +27,8 @@ class FulfillmentEndpoint:
     def __init__(self, client: ShopifyClient) -> None:
         self._client = client
 
-    def create(self, fulfillment: CreateFulfillment) -> ShopifyFallible[Fulfillment]:
+    def create(self, fulfillment: CreateFulfillment) -> Fulfillment:
         endpoint = "fulfillments.json"
         request: _CreateRequest = {"fulfillment": fulfillment}
-        response: ShopifyFallible[_CreateResponse] = self._client.post(endpoint, request)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _CreateResponse = self._client.post(endpoint, request)
         return response["fulfillment"]

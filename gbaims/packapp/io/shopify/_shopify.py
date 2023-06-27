@@ -1,8 +1,9 @@
 from ._client import ShopifyClient
 from ._config import ShopifyConfig
-from ._exceptions import ClientShopifyError as ClientShopifyError
-from ._exceptions import ServerShopifyFailure as ServerShopifyFailure
-from ._exceptions import ShopifyFailure as ShopifyFailure
+from ._errors import ClientShopifyError as ClientShopifyError
+from ._errors import ServerShopifyError as ServerShopifyError
+from ._errors import ShopifyError as ShopifyError
+from ._errors import UnknownShopifyError as UnknownShopifyError
 from .endpoints.assigned_fulfillment_order import AssignedFulfillmentOrderEndpoint
 from .endpoints.fulfillment import FulfillmentEndpoint
 from .endpoints.fulfillment_request import FulfillmentRequestEndpoint

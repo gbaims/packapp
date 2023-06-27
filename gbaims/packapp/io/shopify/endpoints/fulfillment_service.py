@@ -1,7 +1,6 @@
 from typing import Literal, TypedDict
 
-from .._client import ShopifyClient, ShopifyFallible
-from .._exceptions import ShopifyFailure
+from .._client import ShopifyClient
 
 
 class _FulfillmentServiceBase(TypedDict):
@@ -40,26 +39,20 @@ class FulfillmentServiceEndpoint:
         self._client = client
         self._endpoint = "fulfillment_services.json"
 
-    def create(self, fulfillment_service: CreateFulfillmentService) -> ShopifyFallible[FulfillmentService]:
+    def create(self, fulfillment_service: CreateFulfillmentService) -> FulfillmentService:
         payload: _CreateRequest = {"fulfillment_service": fulfillment_service}
-        response: ShopifyFallible[_CreateResponse] = self._client.post(self._endpoint, payload=payload)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _CreateResponse = self._client.post(self._endpoint, payload=payload)
         return response["fulfillment_service"]
 
-    def find_by_name(self, name: str) -> ShopifyFallible[FulfillmentService | None]:
+    def find_by_name(self, name: str) -> FulfillmentService | None:
         services = self.all(name)
-        if isinstance(services, ShopifyFailure):
-            return services
         if not services:
             return None
         return services[0]
 
-    def all(self, name: str = "") -> ShopifyFallible[list[FulfillmentService]]:
+    def all(self, name: str = "") -> list[FulfillmentService]:
         params = {"scope": "all"}
-        response: ShopifyFallible[_AllResponse] = self._client.get(self._endpoint, params=params)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _AllResponse = self._client.get(self._endpoint, params=params)
         services = response["fulfillment_services"]
         if not name:
             return services

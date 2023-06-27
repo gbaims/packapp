@@ -1,8 +1,7 @@
 from datetime import datetime
 from typing import Optional, TypedDict
 
-from .._client import ShopifyClient, ShopifyFallible
-from .._exceptions import ShopifyFailure
+from .._client import ShopifyClient
 
 
 class Customer(TypedDict):
@@ -45,9 +44,7 @@ class OrderEndpoint:
     def __init__(self, client: ShopifyClient) -> None:
         self._client = client
 
-    def find(self, id: int) -> ShopifyFallible[Order]:
+    def find(self, id: int) -> Order:
         endpoint = f"orders/{id}.json"
-        response: ShopifyFallible[_FindResponse] = self._client.get(endpoint)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _FindResponse = self._client.get(endpoint)
         return response["order"]

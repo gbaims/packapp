@@ -2,8 +2,7 @@ from typing import Literal, Optional, TypedDict
 
 from typing_extensions import NotRequired
 
-from .._client import ShopifyClient, ShopifyFallible
-from .._exceptions import ShopifyFailure
+from .._client import ShopifyClient
 
 
 class AcceptedFulfillmentOrder(TypedDict):
@@ -51,20 +50,15 @@ class FulfillmentRequestEndpoint:
     def __init__(self, client: ShopifyClient) -> None:
         self._client = client
 
-    def accept(self, fulfillment_order_id: int) -> ShopifyFallible[AcceptedFulfillmentOrder]:
+    def accept(self, fulfillment_order_id: int) -> AcceptedFulfillmentOrder:
         endpoint = f"fulfillment_orders/{fulfillment_order_id}/fulfillment_request/accept.json"
-        response: ShopifyFallible[_AcceptResponse] = self._client.post(endpoint)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _AcceptResponse = self._client.post(endpoint)
         return response["fulfillment_order"]
-        # TODO handle unsuccessful response
 
     def reject(
         self, fulfillment_order_id: int, fulfillment_request: Optional[RejectFulfillmentRequest] = None
-    ) -> ShopifyFallible[RejectedFulfillmentOrder]:
+    ) -> RejectedFulfillmentOrder:
         endpoint = f"fulfillment_orders/{fulfillment_order_id}/fulfillment_request/reject.json"
         request: _RejectRequest = {"fulfillment_request": fulfillment_request} if fulfillment_request else {}
-        response: ShopifyFallible[_RejectResponse] = self._client.post(endpoint, request)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _RejectResponse = self._client.post(endpoint, request)
         return response["fulfillment_order"]

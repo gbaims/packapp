@@ -1,20 +1,12 @@
 import json
-from typing import Any, Mapping, Optional, TypeVar
+from typing import Any, Mapping, Optional
 
 from requests import HTTPError, RequestException, Response, Session
 from requests.adapters import HTTPAdapter
 
 from ._config import ShopifyConfig
-from ._exceptions import (
-    ClientShopifyError,
-    ServerShopifyFailure,
-    ShopifyFailure,
-    UnknownShopifyError,
-)
+from ._errors import ClientShopifyError, ServerShopifyError, UnknownShopifyError
 from ._json import ShopifyJSONDecoder, ShopifyJSONEncoder
-
-T = TypeVar("T")
-ShopifyFallible = T | ServerShopifyFailure
 
 
 class ShopifyClient:
@@ -22,20 +14,16 @@ class ShopifyClient:
         self._config = config
         self._session: Optional[Session] = None
 
-    def get(self, endpoint: str, params: Optional[Mapping[str, Any]] = None) -> ShopifyFallible[T]:
+    def get(self, endpoint: str, params: Optional[Mapping[str, Any]] = None) -> Any:
         response = self._request("GET", endpoint, params=params)
-        if isinstance(response, ShopifyFailure):
-            return response
         return response.json(cls=ShopifyJSONDecoder)
 
-    def post(self, endpoint: str, payload: Optional[Mapping[str, Any]] = None) -> ShopifyFallible[T]:
+    def post(self, endpoint: str, payload: Optional[Mapping[str, Any]] = None) -> Any:
         data = json.dumps(payload, cls=ShopifyJSONEncoder)
         response = self._request("POST", endpoint, data=data)
-        if isinstance(response, ShopifyFailure):
-            return response
         return response.json(cls=ShopifyJSONDecoder)
 
-    def _request(self, method: str, endpoint: str, **kwargs: Any) -> ShopifyFallible[Response]:
+    def _request(self, method: str, endpoint: str, **kwargs: Any) -> Response:
         url = f"{self._config.base_url}{endpoint}"
         try:
             response = self._lazy_session().request(method, url, **kwargs)
@@ -46,7 +34,7 @@ class ShopifyClient:
             body = exc.response.text
             if 400 <= code < 500:
                 raise ClientShopifyError(code, reason, body) from exc
-            return ServerShopifyFailure(code, reason, body)
+            raise ServerShopifyError(code, reason, body) from exc
         except RequestException as exc:
             request = exc.request
             response = exc.response

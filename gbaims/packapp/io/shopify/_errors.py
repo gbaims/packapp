@@ -1,21 +1,17 @@
 from requests import Request, Response
 
-from gbaims.packapp.lib.exceptions import PackappException
+from gbaims.packapp.lib.errors import PackappError
 
 
-class ShopifyFailure(PackappException):
+class ShopifyError(PackappError):
     pass
 
 
-class ServerShopifyFailure(ShopifyFailure):
+class ServerShopifyError(ShopifyError):
     message = "Shopify server failed to handle an apparently valid request [{code} {reason}] {body}"
 
     def __init__(self, code: int, reason: str, body: str) -> None:
         super().__init__(code=code, reason=reason, body=body)
-
-
-class ShopifyError(PackappException):
-    pass
 
 
 class ClientShopifyError(ShopifyError):

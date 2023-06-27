@@ -1,5 +1,5 @@
 from gbaims.packapp.io.config import Config
-from gbaims.packapp.io.shopify import Shopify, ShopifyConfig, ShopifyFailure
+from gbaims.packapp.io.shopify import Shopify, ShopifyConfig
 from gbaims.packapp.io.shopify.endpoints.fulfillment_service import (
     CreateFulfillmentService,
 )
@@ -27,9 +27,7 @@ def _seed_shopify(config: ShopifyConfig):
             "requires_shipping_method": True,
             "format": "json",
         }
-        service = shopify.fulfillment_service.create(payload)
-        if isinstance(service, ShopifyFailure):
-            raise service
+        shopify.fulfillment_service.create(payload)
 
 
 if __name__ == "__main__":

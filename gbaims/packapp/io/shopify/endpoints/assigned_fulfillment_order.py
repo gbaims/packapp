@@ -1,7 +1,6 @@
 from typing import Literal, Optional, TypedDict
 
-from .._client import ShopifyClient, ShopifyFallible
-from .._exceptions import ShopifyFailure
+from .._client import ShopifyClient
 
 AssignmentStatus = Literal[
     "fulfillment_unsubmitted",
@@ -51,7 +50,7 @@ class AssignedFulfillmentOrderEndpoint:
         self,
         assignment_status: Optional[AssignmentStatus] = None,
         location_ids: list[int] = [],
-    ) -> ShopifyFallible[list[AssignedFulfillmentOrder]]:
+    ) -> list[AssignedFulfillmentOrder]:
         endpoint = "assigned_fulfillment_orders.json"
         params: dict[str, str | list[int]] = {}
         if assignment_status:
@@ -59,7 +58,5 @@ class AssignedFulfillmentOrderEndpoint:
         if location_ids:
             params.update({"location_ids[]": location_ids})
 
-        response: ShopifyFallible[_AllResponse] = self._client.get(endpoint, params=params)
-        if isinstance(response, ShopifyFailure):
-            return response
+        response: _AllResponse = self._client.get(endpoint, params=params)
         return response["fulfillment_orders"]
