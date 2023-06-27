@@ -1,6 +1,6 @@
 from requests import Request, Response
 
-from gbaims.packapp.lib.errors import PackappError
+from gbaims.packapp.core.errors import PackappError
 
 
 class ShopifyError(PackappError):

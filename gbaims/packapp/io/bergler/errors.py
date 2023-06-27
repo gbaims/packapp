@@ -1,6 +1,6 @@
 from typing import Any
 
-from gbaims.packapp.lib.errors import PackappError
+from gbaims.packapp.core.errors import PackappError
 
 
 class BerglerError(PackappError):
