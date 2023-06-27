@@ -1,4 +1,5 @@
 import json
+import logging
 from typing import Any, Mapping, Optional
 
 from requests import HTTPError, RequestException, Response, Session
@@ -24,9 +25,12 @@ class ShopifyClient:
         return response.json(cls=ShopifyJSONDecoder)
 
     def _request(self, method: str, endpoint: str, **kwargs: Any) -> Response:
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Method: {method}, endpoint: {endpoint}, args: {kwargs}")
         url = f"{self._config.base_url}{endpoint}"
         try:
             response = self._lazy_session().request(method, url, **kwargs)
+            logger.debug(f"Response: {response}")
             response.raise_for_status()
         except HTTPError as exc:
             code = exc.response.status_code

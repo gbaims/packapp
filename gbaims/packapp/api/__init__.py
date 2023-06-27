@@ -1,12 +1,18 @@
+import logging
+
 from flask import json
 from werkzeug import Response
 from werkzeug.exceptions import HTTPException, InternalServerError
 
 from ._fetch_stock import *
+from ._fulfillment_order_notification import *
 
 
-def handle_exception(e: Exception) -> Response:
-    error = e if isinstance(e, HTTPException) else InternalServerError()
+def handle_exception(exc: Exception) -> Response:
+    logger = logging.getLogger(__name__)
+    logger.exception(exc)
+
+    error = exc if isinstance(exc, HTTPException) else InternalServerError()
     data = {
         "code": error.code,
         "name": error.name,

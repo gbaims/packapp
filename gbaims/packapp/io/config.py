@@ -2,6 +2,7 @@ from enum import Enum
 
 from pydantic import BaseSettings
 
+from gbaims.packapp.io.bergler import BerglerConfig
 from gbaims.packapp.io.shopify import ShopifyConfig
 
 
@@ -17,6 +18,7 @@ class EnvironmentConfig(Enum):
 
 
 class Config(BaseSettings):
+    bergler: BerglerConfig
     environment: EnvironmentConfig
     shopify: ShopifyConfig
 

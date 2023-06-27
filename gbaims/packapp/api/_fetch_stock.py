@@ -8,7 +8,6 @@ from gbaims.packapp import ctx
 def fetch_stock():
     with open("downloads/skudb.json") as file:
         data = file.read()
-
     skus = json.loads(data)
     requested_sku = ctx.request.args.get("sku")
     if requested_sku:
