@@ -1,5 +1,8 @@
 from ._client import ShopifyClient
 from ._config import ShopifyConfig
+from ._exceptions import ClientShopifyError as ClientShopifyError
+from ._exceptions import ServerShopifyFailure as ServerShopifyFailure
+from ._exceptions import ShopifyFailure as ShopifyFailure
 from .endpoints.assigned_fulfillment_order import AssignedFulfillmentOrderEndpoint
 from .endpoints.fulfillment import FulfillmentEndpoint
 from .endpoints.fulfillment_request import FulfillmentRequestEndpoint
@@ -12,8 +15,24 @@ class Shopify:
         self._client = ShopifyClient(config)
 
     @property
+    def assigned_fulfillment_order(self) -> AssignedFulfillmentOrderEndpoint:
+        return AssignedFulfillmentOrderEndpoint(self._client)
+
+    @property
+    def fulfillment(self) -> FulfillmentEndpoint:
+        return FulfillmentEndpoint(self._client)
+
+    @property
+    def fulfillment_request(self) -> FulfillmentRequestEndpoint:
+        return FulfillmentRequestEndpoint(self._client)
+
+    @property
     def fulfillment_service(self) -> FulfillmentServiceEndpoint:
         return FulfillmentServiceEndpoint(self._client)
+
+    @property
+    def order(self) -> OrderEndpoint:
+        return OrderEndpoint(self._client)
 
     def close(self):
         return self._client.close()

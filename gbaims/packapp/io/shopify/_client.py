@@ -1,17 +1,20 @@
 import json
-from typing import Any, Mapping, Optional
+from typing import Any, Mapping, Optional, TypeVar
 
-from requests import RequestException, Response, Session
+from requests import HTTPError, RequestException, Response, Session
 from requests.adapters import HTTPAdapter
 
 from ._config import ShopifyConfig
-from ._errors import (
+from ._exceptions import (
     ClientShopifyError,
-    NotFoundShopifyError,
-    ServerShopifyError,
-    ShopifyError,
+    ServerShopifyFailure,
+    ShopifyFailure,
+    UnknownShopifyError,
 )
 from ._json import ShopifyJSONDecoder, ShopifyJSONEncoder
+
+T = TypeVar("T")
+ShopifyFallible = T | ServerShopifyFailure
 
 
 class ShopifyClient:
@@ -19,30 +22,36 @@ class ShopifyClient:
         self._config = config
         self._session: Optional[Session] = None
 
-    def get(self, endpoint: str, params: Optional[Mapping[str, Any]] = None) -> Any:
+    def get(self, endpoint: str, params: Optional[Mapping[str, Any]] = None) -> ShopifyFallible[T]:
         response = self._request("GET", endpoint, params=params)
+        if isinstance(response, ShopifyFailure):
+            return response
         return response.json(cls=ShopifyJSONDecoder)
 
-    def post(self, endpoint: str, payload: Optional[Mapping[str, Any]] = None) -> Any:
+    def post(self, endpoint: str, payload: Optional[Mapping[str, Any]] = None) -> ShopifyFallible[T]:
         data = json.dumps(payload, cls=ShopifyJSONEncoder)
         response = self._request("POST", endpoint, data=data)
+        if isinstance(response, ShopifyFailure):
+            return response
         return response.json(cls=ShopifyJSONDecoder)
 
-    def _request(self, method: str, endpoint: str, **kwargs: Any) -> Response:
+    def _request(self, method: str, endpoint: str, **kwargs: Any) -> ShopifyFallible[Response]:
         url = f"{self._config.base_url}{endpoint}"
         try:
             response = self._lazy_session().request(method, url, **kwargs)
-        except RequestException as re:
-            raise ShopifyError("Error raised by requests package") from re
+            response.raise_for_status()
+        except HTTPError as exc:
+            code = exc.response.status_code
+            reason = exc.response.reason
+            body = exc.response.text
+            if 400 <= code < 500:
+                raise ClientShopifyError(code, reason, body) from exc
+            return ServerShopifyFailure(code, reason, body)
+        except RequestException as exc:
+            request = exc.request
+            response = exc.response
+            raise UnknownShopifyError(request, response) from exc
         else:
-            code = response.status_code
-            reason = response.reason
-            if code == 404:
-                raise NotFoundShopifyError(code, reason, response)
-            elif 400 <= code < 500:
-                raise ClientShopifyError(code, reason, response)
-            elif 500 <= code < 600:
-                raise ServerShopifyError(code, reason, response)
             return response
 
     def _lazy_session(self) -> Session:

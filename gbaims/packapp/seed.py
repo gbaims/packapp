@@ -1,18 +1,18 @@
 from gbaims.packapp.io.config import Config
-from gbaims.packapp.io.shopify import Shopify
+from gbaims.packapp.io.shopify import Shopify, ShopifyConfig, ShopifyFailure
 from gbaims.packapp.io.shopify.endpoints.fulfillment_service import (
     CreateFulfillmentService,
 )
 
 
 def initialize_data(config: Config):
-    _seed_shopify(config)
+    _seed_shopify(config.shopify)
 
 
-def _seed_shopify(config: Config):
-    with Shopify(config.shopify) as shopify:
-        name = config.shopify.fulfillment_service.name
-        callback_url = config.shopify.fulfillment_service.callback_url
+def _seed_shopify(config: ShopifyConfig):
+    with Shopify(config) as shopify:
+        name = config.fulfillment_service.name
+        callback_url = config.fulfillment_service.callback_url
 
         if shopify.fulfillment_service.find_by_name(name):
             return
@@ -27,7 +27,9 @@ def _seed_shopify(config: Config):
             "requires_shipping_method": True,
             "format": "json",
         }
-        shopify.fulfillment_service.create(payload)
+        service = shopify.fulfillment_service.create(payload)
+        if isinstance(service, ShopifyFailure):
+            raise service
 
 
 if __name__ == "__main__":
