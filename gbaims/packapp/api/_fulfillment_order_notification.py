@@ -20,7 +20,7 @@ from gbaims.packapp.io.shopify.endpoints.order import Order, OrderLineItem
 
 
 def fulfillment_order_notification() -> Tuple[dict[str, str], int]:
-    kind = str(ctx.request.json.get("kind", "")) if ctx.request.json is not None else ""
+    kind = str(ctx.request.json.get("kind", "")).lower() if ctx.request.json is not None else ""
     match kind:
         case "fulfillment_request":
             _fulfillment()
