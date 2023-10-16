@@ -1,0 +1,24 @@
+POST https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/fulfillments.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}
+Content-Type: application/json
+
+{
+    "fulfillment": {
+        "line_items_by_fulfillment_order": [
+            {
+                "fulfillment_order_id": 6641342611724
+            }
+        ]
+    }
+}
+
+###
+
+@fulfillment_order_id = 6641342611724
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/fulfillment_orders/{{fulfillment_order_id}}/fulfillments.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}
+
+###
+@fulfillment_id = 5040957554956
+POST https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/fulfillments/{{fulfillment_id}}/cancel.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}

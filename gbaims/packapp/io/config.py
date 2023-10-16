@@ -1,6 +1,6 @@
 from enum import Enum
 
-from pydantic import BaseSettings
+from pydantic import BaseModel, BaseSettings
 
 from gbaims.packapp.io.bergler import BerglerConfig
 from gbaims.packapp.io.shopify import ShopifyConfig
@@ -17,9 +17,44 @@ class EnvironmentConfig(Enum):
         return self == EnvironmentConfig.PRODUCTION
 
 
+class LoggingConfig(BaseModel):
+    level: str
+
+    def as_dict(self):
+        return {
+            "version": 1,
+            "root": {"level": "ERROR", "handlers": ["stderr"]},
+            "loggers": {
+                # "gunicorn.access": {"level": self.level, "handlers": ["stdout"]},
+                # "gunicorn.error": {"level": self.level, "handlers": ["stderr"]},
+                # "werkzeug": {"level": self.level, "handlers": ["stderr"]},
+            },
+            "handlers": {
+                "stdout": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "simple",
+                    "stream": "ext://sys.stdout",
+                },
+                "stderr": {
+                    "class": "logging.StreamHandler",
+                    "formatter": "simple",
+                    "stream": "ext://sys.stderr",
+                    "level": "DEBUG",
+                },
+            },
+            "formatters": {
+                "simple": {
+                    "format": "%(levelname)-5s | %(message)s [%(name)s]",
+                    "class": "logging.Formatter",
+                }
+            },
+        }
+
+
 class Config(BaseSettings):
-    bergler: BerglerConfig
     environment: EnvironmentConfig
+    logging: LoggingConfig
+    bergler: BerglerConfig
     shopify: ShopifyConfig
 
     class Config(BaseSettings.Config):

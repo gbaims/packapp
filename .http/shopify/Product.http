@@ -1,0 +1,7 @@
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/products/44386296594659.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}
+
+###
+
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/variants.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}

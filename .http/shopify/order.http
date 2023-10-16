@@ -1,0 +1,7 @@
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/orders/5817099059468.json?
+X-Shopify-Access-Token: {{$dotenv TOKEN}}
+
+###
+
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/orders/5817099059468/fulfillment_orders.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}

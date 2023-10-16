@@ -1,0 +1,16 @@
+@fulfillment_order_id = 6606733934860
+POST https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/fulfillment_orders/{{fulfillment_order_id}}/fulfillment_request/reject.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}
+Content-Type: application/json
+
+{
+    "id": "{{fulfillment_order_id}}",
+    "line_items": [
+        {
+            "fulfillment_order_line_item_id": "14006754345228",
+            "message": "We weren't able to find this product in the warehouse. Sorry!"
+        }
+    ],
+    "message": "We weren't able to find this product in the warehouse. Sorry!",
+    "reason": "inventory_out_of_stock"
+}

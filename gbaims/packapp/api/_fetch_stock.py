@@ -1,19 +1,17 @@
 import json
 
-from flask import abort
-
 from gbaims.packapp import ctx
 
 
 def fetch_stock():
-    with open("downloads/skudb.json") as file:
-        data = file.read()
-    skus = json.loads(data)
+    bergler = ctx.g.bergler
     requested_sku = ctx.request.args.get("sku")
+
+    with open("downloads/variants.json") as file:
+        data = file.read()
+    variants = json.loads(data)["variants"]
     if requested_sku:
-        if (qty := skus.get(requested_sku)) is None:
-            abort(404)
-
-        return {requested_sku: qty}
-
-    return skus
+        variants = [v for v in variants if v["sku"] == requested_sku]
+    skus_by_id = {v["inventory_item_id"]: v["sku"] for v in variants}
+    availables = bergler.product_available(list(skus_by_id.keys()))
+    return {skus_by_id[a["id"]]: a["qty_available"] for a in availables}

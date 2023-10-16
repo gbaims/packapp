@@ -1,0 +1,28 @@
+POST https://services.fulfillment.digital/fm/services/BusinessLink.asmx
+Content-Type: text/xml;charset=utf-8
+SOAPAction: http://www.myfactory.de/gbCallCustomerBusinessLinkMethod
+
+<?xml version="1.0" encoding="UTF-8"?>
+<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
+  <soap:Body>
+    <gbCallCustomerBusinessLinkMethod xmlns="http://www.myfactory.de/">
+      <sAccessArea>{{$dotenv ACCESS_AREA}}</sAccessArea>
+      <sCustomerNumber>{{$dotenv CUSTOMER_NUMBER}}</sCustomerNumber>
+      <sPassword>{{$dotenv PASSWORD}}</sPassword>
+      <sMethod>WebShopProductImport</sMethod>
+      <sParams>
+        &lt;Products&gt;
+          &lt;Product&gt;
+            &lt;ProductID&gt;46102749544716&lt;/ProductID&gt;
+            &lt;ProductNumber&gt;46102749544716&lt;/ProductNumber&gt;
+            &lt;BaseUnit&gt;Stk&lt;/BaseUnit&gt;
+            &lt;Name1&gt;&lt;![CDATA[Eyeliner 20 Braun]]&gt;&lt;/Name1&gt;
+            &lt;Texation&gt;1&lt;/Texation&gt;
+            &lt;EAN&gt;618119349912&lt;/EAN&gt;
+          &lt;/Product&gt;
+        &lt;/Products&gt;
+      </sParams>
+
+    </gbCallCustomerBusinessLinkMethod>
+  </soap:Body>
+</soap:Envelope>

@@ -1,0 +1,2 @@
+GET https://{{$dotenv HOST}}/admin/api/{{$dotenv VERSION}}/assigned_fulfillment_orders.json
+X-Shopify-Access-Token: {{$dotenv TOKEN}}

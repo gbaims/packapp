@@ -1,6 +1,6 @@
 import logging
+import logging.config
 
-import flask
 from flask import Flask, g
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -11,11 +11,21 @@ from gbaims.packapp.io.shopify import Shopify
 
 
 def create_app():
+    config = Config()  # type: ignore
+    logging.config.dictConfig(config.logging.as_dict())
+
     app = Flask(__name__)
     app.config.from_prefixed_env("FLASK")
+    # app.logger.removeHandler(flask.logging.default_handler)
+    # l = logging.getLogger("werkzeug")
+    # print(l.handlers)
+    # l.info("teste")
+    # l.handlers = []
+    # print(l.handlers)
+    # l.removeHandler(flask.logging.default_handler)
+    # print(app.logger.handlers)
 
     # Compose Object Dependency Graph
-    config = Config()  # type: ignore
 
     @app.before_request
     def start_resources():  # type: ignore
@@ -33,14 +43,15 @@ def create_app():
     if config.environment.is_production():
         app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)  # type: ignore
 
-        gunicorn_logger = logging.getLogger("gunicorn.error")
-        root_logger = logging.getLogger()
-        root_logger.handlers = gunicorn_logger.handlers
-        root_logger.setLevel(gunicorn_logger.level)
-    else:
-        root_logger = logging.getLogger()
-        root_logger.addHandler(flask.logging.default_handler)  # type: ignore
-        root_logger.setLevel(app.logger.level)
+    # logconfig_dict = {"version": 1, "root": {"level": "DEBUG"}, "loggers": {"gunicorn": {"level": "DEBUG"}}}
+    #     gunicorn_logger = logging.getLogger("gunicorn.error")
+    #     root_logger = logging.getLogger()
+    #     root_logger.handlers = gunicorn_logger.handlers
+    #     root_logger.setLevel(gunicorn_logger.level)
+    # else:
+    #     root_logger = logging.getLogger()
+    #     root_logger.addHandler(flask.logging.default_handler)  # type: ignore
+    #     root_logger.setLevel(app.logger.level)
 
     app.errorhandler(Exception)(api.handle_exception)
     app.get("/fetch_stock.json")(api.fetch_stock)
